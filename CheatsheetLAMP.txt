@@ -1,0 +1,21 @@
+Voor een firewall in te stellen in ansible:
+
+-	Name = Configure firewall 
+Firewalld: service=httpd state = enabled permanent=no -> service toevoegen
+-	Name = Configure firewall (permanent) -> na booten, service permanent
+Firewalld: service=httpd state = enabled permanent=yes
+
+Enable a service in zone:	firewall-cmd [--permanent] [--zone=ZONE] --add-service=http
+
+commandline, aan en uitzetten firewall
+-   Sudo firewall-cmd –list-all -> Toont de firewall instellingen/services.
+-	Sudo systemctl stop firewalld.service -> firewall stoppen
+-	Sudo systemctl start firewalld.service -> firewall starten
+
+Installatie epel en roles, toe te voegen in roles/{{naam role}}/tasks/main.yml
+
+-	  name: Install extra repositories
+      yum: pkg={{item}} state = installed
+      with_items:
+        - hier een item toe te voegen
+        

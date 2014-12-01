@@ -1,0 +1,49 @@
+Stap 0: Kabel aansluiten in virtualbox
+
+Stap 1: Qwerty naar azerty
+-	Sudo loadkeys be-latin1
+
+Stap 2: systemctl list-units --type service | httpd
+-	Kijken of de service http draait
+
+Stap 3: sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s8
+Host address veranderen zodat het in de range van het network address ligt.
+Stap 4: sudo systemctl firewall-cmd –add-service=https –permanent
+Uitzondering aan firewall toevoegen
+
+Stap 5: Config file aanpassen
+-	Sudo vi /etc/httpd/conf/httpd.conf
+-	Listen 80
+zorgen dat hij luistert naar de juiste poort, bij installatie ssl wordt de poort automatisch verzorgd.
+
+Verschillende stappen die te maken hebben met de verschillende lagen!
+
+Op de fysische laag
+Ip a: No Carrier = geen signaal op de kabel, ook in virtualbox dit checken bij instellingen.
+
+Op de netwerklaag
+Kijken naar de lichtjes, kijken naar afwijkingen
+
+Op de internetlaag
+- eigen ip adress controleren en indien nodig aanpassen
+hier aanpassen: sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s8
+We passen reboot naar yes aan en we vullen het controleren het ip adress
+Indien iets aangepast, rebooten: sudo systemctl restart network.service
+default gateway op NAT interface moet altijd 10.0.2.2 zijn
+- DNS 
+cat etc/resolv.conf
+Controleren of de DNS servers aanwezig zijn
+- Default gateway
+Pingen naar de default gateway
+
+Op de transportlaag
+Welke poorten staan er open? Checken met systemctl
+Echo $? -> indien 0 = alles is goed verlopen
+Ss – tln = netstat
+Sudo ps –ef= lijst van processen die aan het draaien zijn
+
+Nadat de poorten gecontroleerd zijn, kijken of de firewall niks blokkeert
+Sudo nmap –A –T4 192.168.56.14, portlist
+
+Op de applicatielaag
+Logfiles bekijken, in apart venster via journalctl -f

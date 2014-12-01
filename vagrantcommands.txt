@@ -1,0 +1,6 @@
+Vagrant box add [name]/[version]  invoegen van een nieuwe vagrant box. In de klas maken wij gebruik van: matyunin/centos7
+Vagrant up: De VM aanmaken indien deze nog nooit eerder gebruikt werd. Indien wel, de VM draaiende maken in virtualbox.
+Vagrant halt: De VM stopzetten (de vm blijft bestaan in virtualbox)
+Vagrant reload: De VM herstarten
+Vagrant destroy: De VM volledig verwijderen (ook uit virtualbox)
+Vagrant box list: oplijsting van de vm’s

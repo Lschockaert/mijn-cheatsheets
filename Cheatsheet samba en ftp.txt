@@ -1,0 +1,57 @@
+Selinux aanzetten 
+- name: Aanzetten setsebool
+  seboolean: name=samba_enable_home_dirs state=yes persistent=yes 
+  
+voorbeeld voor shares aan te maken en permissies
+- name: Main directory for Samba shares
+  file:
+    state=directory
+    path={{ samba_share_root }}
+    mode=0755
+    group=root
+  tags: samba
+  
+  Voor meer voorbeelden zie labo en reeds aangemaakte server.
+  
+ftp
+
+- name: Set selinux boolean ftp_home_dir
+  seboolean: name=ftp_home_dir state=yes persistent=yes
+
+- name: Set selinux boolean allow_ftpd_full_access
+  seboolean: name=ftpd_full_access state=yes persistent=yes
+
+- name: Configuration
+  template:
+    src=vsftpd.conf.j2
+    dest=/etc/vsftpd/vsftpd.conf
+    mode=0600
+    owner=root
+    group=root
+  notify: Restart FTP
+  tags: ftp
+  
+Voorbeeld van de variabalen met permissies
+  - name: "lenards"
+    given_name: "Lenard"
+    surname: "Schockaert"
+    groups: 
+        - "directie"
+        - "staf"
+        - "financieringen"
+        - "verzekeringen"
+        - "beheer"
+        - "publiek"
+    password: "Erty123"
+    shell: /bin/bash
+    
+ - name: "staf"
+    public: "no"
+    write_list: "@staf"
+    force_group: "staf"
+    create_mask: "0775"
+    force_create_mode: "0775"
+    directory_mask: "0775"
+    force_directory_mode: "0775"
+    
+ 
