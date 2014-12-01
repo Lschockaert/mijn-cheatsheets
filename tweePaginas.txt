@@ -1,0 +1,98 @@
+Troubleshooting
+Stap 0: Kabel aansluiten in virtualbox
+
+Stap 1: Qwerty naar azerty
+- Sudo loadkeys be-latin1
+
+Stap 2: systemctl list-units --type service | httpd
+- Kijken of de service http draait
+
+Stap 3: sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s8
+Host address veranderen zodat het in de range van het network address ligt.
+Stap 4: sudo systemctl firewall-cmd –add-service=https –permanent
+Uitzondering aan firewall toevoegen
+
+Stap 5: Config file aanpassen
+- Sudo vi /etc/httpd/conf/httpd.conf
+- Listen 80
+zorgen dat hij luistert naar de juiste poort, bij installatie ssl wordt de poort automatisch verzorgd.
+
+Verschillende stappen die te maken hebben met de verschillende lagen!
+
+Op de fysische laag
+Ip a: No Carrier = geen signaal op de kabel, ook in virtualbox dit checken bij instellingen.
+
+Op de netwerklaag
+Kijken naar de lichtjes, kijken naar afwijkingen
+
+Op de internetlaag
+- eigen ip adress controleren en indien nodig aanpassen
+hier aanpassen: sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s8
+We passen reboot naar yes aan en we vullen het controleren het ip adress
+Indien iets aangepast, rebooten: sudo systemctl restart network.service
+default gateway op NAT interface moet altijd 10.0.2.2 zijn
+- DNS 
+cat etc/resolv.conf
+Controleren of de DNS servers aanwezig zijn
+- Default gateway
+Pingen naar de default gateway
+
+Op de transportlaag
+Welke poorten staan er open? Checken met systemctl
+Echo $? -> indien 0 = alles is goed verlopen
+Ss – tln = netstat
+Sudo ps –ef= lijst van processen die aan het draaien zijn
+
+Nadat de poorten gecontroleerd zijn, kijken of de firewall niks blokkeert
+Sudo nmap –A –T4 192.168.56.14, portlist
+
+Op de applicatielaag
+Logfiles bekijken, in apart venster via journalctl –f
+
+Voor een firewall in te stellen in ansible:
+
+- Name = Configure firewall 
+  Firewalld: service=httpd state = enabled permanent=no -> service toevoegen
+- Name = Configure firewall (permanent) -> na booten, service permanent
+  Firewalld: service=httpd state = enabled permanent=yes
+
+Enable a service in zone: firewall-cmd [--permanent] [--zone=ZONE] --add-service=http
+
+commandline, aan en uitzetten firewall
+- Sudo firewall-cmd –list-all -> Toont de firewall instellingen/services.
+- Sudo systemctl stop firewalld.service -> firewall stoppen
+- Sudo systemctl start firewalld.service -> firewall starten
+
+Installatie epel en roles, toe te voegen in roles/{{naam role}}/tasks/main.yml
+
+- name: Install extra repositories
+yum: pkg={{item}} state = installed
+with_items:
+
+Commando’s voor netwerk
+ip address = oplijsten ip
+ip r = oplijsten route
+cat /etc/resolv.conf = dns
+
+services
+systemctl list-units --type service = oplijsten van alle services
+sudo systemctl X SERVICE.service = X kan zijn: status, start, stop, kill,…
+
+SE
+setenforce 0-1 = aan of uit
+getsebool –a = alle booleans van selinux
+setsebool -P {{naamBoolean}} 0-1 = Boolean aan of uit
+
+
+Voorbeeld van template te kopieren naar gerichte map
+- name: Configuration
+template:
+src=vsftpd.conf.j2
+dest=/etc/vsftpd/vsftpd.conf
+mode=0600
+owner=root
+group=root
+notify: Restart FTP
+tags: ftp
+
+
